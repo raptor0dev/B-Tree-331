@@ -33,9 +33,6 @@ displayed to the console indicating execution of the program.
 #include "dualHeap.h"  //include for dual heap
 #include "type.h"   //macros that replace sections of code based on data type
 #include "SequenceSet.h"
-//#include "DNode.h"
-//#include "DLinkedList.h"
-//#include "PrecondViolatedExcep.h"
 
 using namespace std;
 
@@ -400,7 +397,7 @@ int main(int argc, char *argv[])
     ifs.open("sorted.txt");
     ofs.open("bplustree.txt");
     SequenceSet<Record> blockObj(ofs, blockSize);
-    //blockObj.writeEmptyBlock(ofs, 0);
+    //blockObj.writeEmptyBlock(ofs, 27);
     /*
     while (ifs.peek() != EOF)
     {
