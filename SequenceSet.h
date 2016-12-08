@@ -23,9 +23,6 @@ private:
 
 public:
    SequenceSet(ostream& os, const int& blockSize);  //default constructor
-   //SequenceSet(const ItemType& anItem);  //parameterized constructor
-   //SequenceSet(const ItemType& anItem, SequenceSet<ItemType>* nextNodePtr,
-         //SequenceSet<ItemType>* prevNodePtr);  //parameterized constructor
 
    /**Set item
    @pre anItem must be passed
@@ -61,7 +58,7 @@ SequenceSet<ItemType>::SequenceSet(ostream& os, const int& blckSize)
 
     os.seekp(0);
     os << initInt << ',' << initInt << ',' << initInt << '|';
-    writeEmptyBlock(os, 27);
+    writeEmptyBlock(os, 28);
 } // end default constructor
 
 template<class ItemType>
