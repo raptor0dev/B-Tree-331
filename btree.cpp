@@ -12,10 +12,7 @@ BTree<keyType>::BTree(int order, SequenceSet r, int keySize)
 	root = r;
 	Height = 1;
 	Order = order;
-	PoolSize = MaxHeight*2;
-	Nodes = new BTNode * [PoolSize];
-	BTNode::InitBuffer(Buffer,order);
-	Nodes[0] = &Root;
+
 }
 
 template <class keyType>
@@ -87,8 +84,11 @@ int BTree<keyType>::Remove (const keyType key, const int recAddr)
 }
 
 template <class keyType>
-int BTree<keyType>::Search (const keyType key, const int recAddr)
+int BTree<keyType>::Search (const keyType key)
 {
+	SequenceSet leafNode;
+
+
 	BTNode * leafNode;
 	leafNode = FindLeaf (key);
 	return leafNode -> Search (key, recAddr);

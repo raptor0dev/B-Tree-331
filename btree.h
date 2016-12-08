@@ -25,13 +25,6 @@ template <class keyType>
 class BTree
 {
 private:
-	struct Node
-	{
-		int count;
-		Node *left;
-		Node *right;
-	};
-	Node *root;
 
 	int Height; // height of tree
 	int Order; // order of tree
