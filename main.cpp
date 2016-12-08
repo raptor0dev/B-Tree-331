@@ -32,9 +32,10 @@ displayed to the console indicating execution of the program.
 #include "CreateInputFile.h" //include to create input file
 #include "dualHeap.h"  //include for dual heap
 #include "type.h"   //macros that replace sections of code based on data type
-#include "DNode.h"
-#include "DLinkedList.h"
-#include "PrecondViolatedExcep.h"
+#include "SequenceSet.h"
+//#include "DNode.h"
+//#include "DLinkedList.h"
+//#include "PrecondViolatedExcep.h"
 
 using namespace std;
 
@@ -387,12 +388,28 @@ int main(int argc, char *argv[])
     printf("Program execution time: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     /** sequential set **/
-    ifs.open("sorted.txt");
 
+    int blockSize;
+    cout << endl << "Enter block size: ";
+    cin >> blockSize;
+    SequenceSet<Record> blockObj(blockSize);
+
+    //recObj = blockObj.getBlockRecord(0);
+    //cout << "recObj: " << recObj << endl;
+    ifs.open("sorted.txt");
+    ofs.open("bplustree.txt");
     while (ifs.peek() != EOF)
     {
-
+        if (blockObj.getBlockSize())
+        recObj.extractFileFront();
+        blockObj.writeToFile(ofs, recObj, pos);
+        pos += recObj.getRecordSize();
     }
+    ifs.close();
+    ofs.close();
+
+    //string str = "12345678";
+    //cout << "Sizeof "  << str << ": " << str.length();
 
 	return 0;
 }
