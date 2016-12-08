@@ -394,10 +394,13 @@ int main(int argc, char *argv[])
     cin >> blockSize;
     SequenceSet<Record> blockObj(blockSize);
 
+
     //recObj = blockObj.getBlockRecord(0);
     //cout << "recObj: " << recObj << endl;
     ifs.open("sorted.txt");
     ofs.open("bplustree.txt");
+    blockObj.writeEmptyBlock(ofs, 0);
+    /*
     while (ifs.peek() != EOF)
     {
         if (blockObj.getBlockSize())
@@ -405,6 +408,7 @@ int main(int argc, char *argv[])
         blockObj.writeToFile(ofs, recObj, pos);
         pos += recObj.getRecordSize();
     }
+    */
     ifs.close();
     ofs.close();
 

@@ -16,7 +16,7 @@ template<class ItemType>
 class SequenceSet
 {
 private:
-   vector<ItemType> block;
+   vector<ItemType> block; //
    vector<int> children;
    int prevBlock, nextBlock, parentBlock, blockSize;
 
@@ -48,8 +48,9 @@ public:
    vector<int> getChildVec () const;
    vector<ItemType> getBlock() const;
    void writeToFile(ostream& os, const Record& object, const int& pos);
-   void writeEmptyBlock(ostream& os, const int& pos)
+   void writeEmptyBlock(ostream& os, const int& pos);
 }; // end Node
+
 template<class ItemType>
 void SequenceSet<ItemType>::writeToFile(ostream& os, const Record& object, const int& pos)
 {
@@ -60,20 +61,26 @@ void SequenceSet<ItemType>::writeToFile(ostream& os, const Record& object, const
 template<class ItemType>
 void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, const int& pos)
 {
+    //Record recObj;
+    int charPos = pos;
     string initString = "-";
-    string initInt = "1";
+    string initInt = "0";
+    string initCharPos = "0";
     initString.resize(4, '-');
-    initInt.resize(4, '1');
-    int tempInt = atoi(initInt.c_str());
+    initInt.resize(4, '0');
+    initCharPos.resize(8, '0');
+    //int tempInt = atoi(initInt.c_str());
 
-    recObj.setName(initString);
-    recObj.setIdNum(tempInt);
+    //recObj.setName(initString);
+    //recObj.setIdNum(initCharPos);
 
     for(int index = 0; index < blockSize; index++)
     {
-        os.seekp(pos);
-        os.recObj;
+        os.seekp(charPos);
+        os << initString << ',' << initInt << '|';
+        charPos += 10;
     }
+    os << initCharPos << '^' << initCharPos << '<' << initCharPos << '>';
 }
 
 template<class ItemType>

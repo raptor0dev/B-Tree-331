@@ -1,0 +1,63 @@
+# depslib dependency file v1.0
+1481222391 source:c:\users\babroid\desktop\bplustree\b-tree-331\dualheap.cpp
+	"dualHeap.h"
+	<string>
+	<sstream>
+
+1481222391 c:\users\babroid\desktop\bplustree\b-tree-331\dualheap.h
+	<array>
+	<iostream>
+	<string>
+	<algorithm>
+	<math.h>
+	<vector>
+	<fstream>
+	"type.h"
+	"Record.h"
+
+1481222391 c:\users\babroid\desktop\bplustree\b-tree-331\type.h
+
+1481222391 c:\users\babroid\desktop\bplustree\b-tree-331\record.h
+	<fstream>
+	<iostream>
+	<string>
+	"type.h"
+
+1481225191 source:c:\users\babroid\desktop\bplustree\b-tree-331\main.cpp
+	<string>
+	<iostream>
+	<fstream>
+	<random>
+	<array>
+	<vector>
+	<time.h>
+	<queue>
+	"Record.h"
+	"CreateInputFile.h"
+	"dualHeap.h"
+	"type.h"
+	"SequenceSet.h"
+
+1481222390 c:\users\babroid\desktop\bplustree\b-tree-331\createinputfile.h
+	<string>
+	<iostream>
+	<fstream>
+	<random>
+	"Record.h"
+	<time.h>
+
+1481228601 c:\users\babroid\desktop\bplustree\b-tree-331\sequenceset.h
+	<string>
+	<iostream>
+	<cstdlib>
+	<fstream>
+	"Record.h"
+	"type.h"
+
+1481222391 source:c:\users\babroid\desktop\bplustree\b-tree-331\record.cpp
+	<fstream>
+	<iostream>
+	<string>
+	<cstdlib>
+	"Record.h"
+
