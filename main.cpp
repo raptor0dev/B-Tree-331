@@ -398,14 +398,15 @@ int main(int argc, char *argv[])
     int blockSize;
     cout << endl << "Enter block size: ";
     cin >> blockSize;
-    SequenceSet<Record> blockObj(blockSize);
+
 
 
     //recObj = blockObj.getBlockRecord(0);
     //cout << "recObj: " << recObj << endl;
     ifs.open("sorted.txt");
     ofs.open("bplustree.txt");
-    blockObj.writeEmptyBlock(ofs, 0);
+    SequenceSet<Record> blockObj(ofs, blockSize);
+    //blockObj.writeEmptyBlock(ofs, 0);
     /*
     while (ifs.peek() != EOF)
     {

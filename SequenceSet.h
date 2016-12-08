@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
+#include <vector>
 #include "Record.h"
 #include "type.h"
 
@@ -21,7 +22,7 @@ private:
    int prevBlock, nextBlock, parentBlock, blockSize;
 
 public:
-   SequenceSet(const int& blockSize);  //default constructor
+   SequenceSet(ostream& os, const int& blockSize);  //default constructor
    //SequenceSet(const ItemType& anItem);  //parameterized constructor
    //SequenceSet(const ItemType& anItem, SequenceSet<ItemType>* nextNodePtr,
          //SequenceSet<ItemType>* prevNodePtr);  //parameterized constructor
@@ -48,31 +49,29 @@ public:
    vector<int> getChildVec () const;
    vector<ItemType> getBlock() const;
    void writeToFile(ostream& os, const Record& object, const int& pos);
-   void writeEmptyBlock(ostream& os, const int& pos);
+   void writeEmptyBlock(ostream& os, int pos);
 }; // end Node
 
 template<class ItemType>
-void SequenceSet<ItemType>::writeToFile(ostream& os, const Record& object, const int& pos)
+SequenceSet<ItemType>::SequenceSet(ostream& os, const int& blckSize)
 {
-    os.seekp(pos);
-    os << object;
-}
+    blockSize = blckSize;
+    string initInt = "0";
+    initInt.resize(8, '0');
+
+    os.seekp(0);
+    os << initInt << ',' << initInt << ',' << initInt << '|';
+    writeEmptyBlock(os, 27);
+} // end default constructor
 
 template<class ItemType>
-void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, const int& pos)
+void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, int pos)
 {
-    //Record recObj;
     int charPos = pos;
-    string initString = "-";
-    string initInt = "0";
-    string initCharPos = "0";
+    string initString = "-", initInt = "0", initCharPos = "0";
     initString.resize(4, '-');
     initInt.resize(4, '0');
     initCharPos.resize(8, '0');
-    //int tempInt = atoi(initInt.c_str());
-
-    //recObj.setName(initString);
-    //recObj.setIdNum(initCharPos);
 
     for(int index = 0; index < blockSize; index++)
     {
@@ -80,26 +79,16 @@ void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, const int& pos)
         os << initString << ',' << initInt << '|';
         charPos += 10;
     }
+
     os << initCharPos << '^' << initCharPos << '<' << initCharPos << '>';
 }
 
 template<class ItemType>
-SequenceSet<ItemType>::SequenceSet(const int& blckSize) //: next(NULL), prev(NULL)
+void SequenceSet<ItemType>::writeToFile(ostream& os, const Record& object, const int& pos)
 {
-    blockSize = blckSize;
-    Record recObj;
-    string initString = "-";
-    string initInt = "1";
-    initString.resize(4, '-');
-    initInt.resize(4, '1');
-    int tempInt = atoi(initInt.c_str());
-    for(int index = 0; index < blockSize; index++)
-    {
-        recObj.setName(initString);
-        recObj.setIdNum(tempInt);
-        block.push_back(recObj);
-    }
-} // end default constructor
+    os.seekp(pos);
+    os << object;
+}
 
 /*
 template<class ItemType>
