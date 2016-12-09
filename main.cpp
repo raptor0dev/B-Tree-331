@@ -394,10 +394,33 @@ int main(int argc, char *argv[])
 
     //recObj = blockObj.getBlockRecord(0);
     //cout << "recObj: " << recObj << endl;
+    ifs.clear();
+    ofs.clear();
+    ofs.flush();
     ifs.open("sorted.txt");
     ofs.open("bplustree.txt");
+
+    //recObj.setName("aaaa");
+    //recObj.setIdNum(1234);
     SequenceSet<Record> blockObj(ofs, blockSize);
-    //blockObj.writeEmptyBlock(ofs, 27);
+    blockObj.writeEmptyBlock(ofs, 26);
+    blockObj.writeEmptyBlock(ofs, 113);
+
+    string availValue = "55";
+    string SS = "12";
+    string BT = "12345678";
+    blockObj.writeEmptyBlock(ofs, 27);
+    blockObj.setAvailList(ofs, availValue);
+    cout << endl;
+
+    blockObj.setSequenceHead(ofs, SS);
+    cout << endl;
+
+    blockObj.setBTreeHead(ofs, BT);
+    cout << blockObj.getBTreeHead();
+    cout << endl;
+
+    //blockObj.writeToFile(ofs, recObj, 27);
     /*
     while (ifs.peek() != EOF)
     {
