@@ -397,7 +397,21 @@ int main(int argc, char *argv[])
     ifs.open("sorted.txt");
     ofs.open("bplustree.txt");
     SequenceSet<Record> blockObj(ofs, blockSize);
-    //blockObj.writeEmptyBlock(ofs, 27);
+
+    //SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
+    string availValue = "55";
+    string SS = "12";
+    string BT = "12345678";
+    blockObj.writeEmptyBlock(ofs, 27);
+    blockObj.setAvailList(ofs, availValue);
+    cout << endl;
+
+    blockObj.setSequenceHead(ofs, SS);
+    cout << endl;
+
+    blockObj.setBTreeHead(ofs, BT);
+    cout << blockObj.getBTreeHead();
+    cout << endl;
     /*
     while (ifs.peek() != EOF)
     {
