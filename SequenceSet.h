@@ -129,6 +129,36 @@ void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
 template<class ItemType>
 void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
 {
+<<<<<<< HEAD
+=======
+} // end constructor
+*/
+
+template<class ItemType>
+void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
+{
+    string temp;
+    temp = availValue;
+   availList = atoi(availValue.c_str());
+   int strsize = 8 - temp.length();
+   string tempzero;
+   if(strsize !=0)
+   {
+       for(int i =0; i < strsize; i++)
+       {
+           tempzero += "0";
+       }
+   }
+   temp = tempzero + temp;
+   os.seekp(0);
+   os << temp;
+   //cout << temp << endl;
+}
+
+template<class ItemType>
+void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
+{
+>>>>>>> origin/master
    string temp;
    temp = seqHead;
    sequenceHead = atoi(seqHead.c_str());
@@ -146,6 +176,30 @@ void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
    os << temp;
    //cout << temp << endl;
 }
+<<<<<<< HEAD
+=======
+
+template<class ItemType>
+void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)
+{
+        string temp;
+    temp = bTHead;
+   bTreeHead = atoi(bTHead.c_str());
+   int strsize = 8 - temp.length();
+   string tempzero;
+   if(strsize !=0)
+   {
+       for(int i =0; i < strsize; i++)
+       {
+           tempzero += "0";
+       }
+   }
+   temp = tempzero + temp;
+   os.seekp(18);
+   os << temp;
+   //cout << temp << endl;
+}
+>>>>>>> origin/master
 
 template<class ItemType>
 void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)

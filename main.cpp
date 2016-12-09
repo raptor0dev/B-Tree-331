@@ -403,9 +403,14 @@ int main(int argc, char *argv[])
     //recObj.setName("aaaa");
     //recObj.setIdNum(1234);
     SequenceSet<Record> blockObj(ofs, blockSize);
+<<<<<<< HEAD
     blockObj.writeEmptyBlock(ofs, 26);
     blockObj.writeEmptyBlock(ofs, 113);
 
+=======
+
+    //SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
+>>>>>>> origin/master
     string availValue = "55";
     string SS = "12";
     string BT = "12345678";
@@ -419,8 +424,11 @@ int main(int argc, char *argv[])
     blockObj.setBTreeHead(ofs, BT);
     cout << blockObj.getBTreeHead();
     cout << endl;
+<<<<<<< HEAD
 
     //blockObj.writeToFile(ofs, recObj, 27);
+=======
+>>>>>>> origin/master
     /*
     while (ifs.peek() != EOF)
     {
