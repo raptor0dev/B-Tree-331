@@ -17,18 +17,18 @@ template<class ItemType>
 class SequenceSet
 {
 private:
-   vector<ItemType> block; // blco
-   vector<int> children;
-   int prevBlock, nextBlock, parentBlock, blockSize;
+   vector<Record> block; // blco
+   int prevBlock, nextBlock, parentBlock, blockSize, lastFilePos;
    int availList, sequenceHead, bTreeHead;
 
 public:
    SequenceSet(ostream& os, const int& blockSize);  //default constructor
 
-   /**Set item
-   @pre anItem must be passed
-   @post sets item equal to anItem
-   @param anItem is data to be stored
+   /**
+   @pre
+   @post
+   @param
+   @return
    */
 
    void setAvailList(ostream& os, string availValue);
@@ -38,7 +38,6 @@ public:
    void setNextBlock(const int& nxtBlock);
    void setParentBlock(const int& prntBlock);
    void setBlockItem(const ItemType& item);
-   void setChildItem(const int& item);
    int getAvailList() const;
    int getSequenceHead() const;
    int getBTreeHead() const;
@@ -46,15 +45,11 @@ public:
    int getNextBlock() const;
    int getParentBlock() const;
    int getBlockSize() const;
-   int getChildrenVecSize() const;
    ItemType getBlockItem(const ItemType& key, const string& type) const;
    Record getBlockRecord(const int& pos) const;
-   int getChildPos(const int& pos) const;
-   vector<int> getChildVec () const;
    vector<ItemType> getBlock() const;
    void writeToFile(ostream& os, const Record& object, const int& pos);
    void writeEmptyBlock(ostream& os, int pos);
-   //friend ostream& operator<<(ostream& os, const SequenceSet& object);
 }; // end Node
 
 template<class ItemType>
@@ -63,53 +58,39 @@ SequenceSet<ItemType>::SequenceSet(ostream& os, const int& blckSize)
     blockSize = blckSize;
     string initInt = "0";
     initInt.resize(8, '0');
-
-    string temp = initInt + ',' + initInt + ',' + initInt;
     os.seekp(0);
-    //os << initInt << "," << initInt << "," << initInt << "|";
-    os << temp;
-    cout << "Constructor pos: " << os.tellp() << endl;
-    //writeEmptyBlock(os, 28);
+    os << initInt << ',' << initInt << ',' << initInt << '|' << endl;
+    writeEmptyBlock(os, os.tellp());
 } // end default constructor
 
 template<class ItemType>
 void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, int pos)
 {
-    os.flush();
-    os.clear();
-    int charPos = pos;
     string initString = "-", initInt = "0", initCharPos = "0";
-    string temp = "";
     initString.resize(4, '-');
     initInt.resize(4, '0');
     initCharPos.resize(8, '0');
-    os.seekp(charPos);
+    os.seekp(pos);
+
     for(int index = 0; index < blockSize; index++)
     {
-
-        temp = temp + initString + ',' + initInt + '|';
-        //os << initString << "," << initInt << "|";
-        //charPos += 10;
+        os << initString << "," << initInt << "|";
     }
-    temp = '|' + temp + initCharPos + '^' + initCharPos + '<' + initCharPos + '>';
-    os << temp;
-    //os << initCharPos << "^" << initCharPos << "<" << initCharPos << ">";
-    cout << "last pos: " << os.tellp() << endl;
+    os << initCharPos << '^' << initCharPos << '<' << initCharPos << '>' << endl;
 }
 
 template<class ItemType>
 void SequenceSet<ItemType>::writeToFile(ostream& os, const Record& object, const int& pos)
 {
     os.seekp(pos);
-
     os << object;
 }
 
 template<class ItemType>
 void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
 {
-    string temp;
-    temp = availValue;
+   string temp;
+   temp = availValue;
    availList = atoi(availValue.c_str());
    int strsize = 8 - temp.length();
    string tempzero;
@@ -129,36 +110,7 @@ void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
 template<class ItemType>
 void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
 {
-<<<<<<< HEAD
-=======
-} // end constructor
-*/
 
-template<class ItemType>
-void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
-{
-    string temp;
-    temp = availValue;
-   availList = atoi(availValue.c_str());
-   int strsize = 8 - temp.length();
-   string tempzero;
-   if(strsize !=0)
-   {
-       for(int i =0; i < strsize; i++)
-       {
-           tempzero += "0";
-       }
-   }
-   temp = tempzero + temp;
-   os.seekp(0);
-   os << temp;
-   //cout << temp << endl;
-}
-
-template<class ItemType>
-void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
-{
->>>>>>> origin/master
    string temp;
    temp = seqHead;
    sequenceHead = atoi(seqHead.c_str());
@@ -176,14 +128,13 @@ void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
    os << temp;
    //cout << temp << endl;
 }
-<<<<<<< HEAD
-=======
+
 
 template<class ItemType>
 void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)
 {
-        string temp;
-    temp = bTHead;
+   string temp;
+   temp = bTHead;
    bTreeHead = atoi(bTHead.c_str());
    int strsize = 8 - temp.length();
    string tempzero;
@@ -199,35 +150,7 @@ void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)
    os << temp;
    //cout << temp << endl;
 }
->>>>>>> origin/master
 
-template<class ItemType>
-void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)
-{
-        string temp;
-    temp = bTHead;
-   bTreeHead = atoi(bTHead.c_str());
-   int strsize = 8 - temp.length();
-   string tempzero;
-   if(strsize !=0)
-   {
-       for(int i =0; i < strsize; i++)
-       {
-           tempzero += "0";
-       }
-   }
-   temp = tempzero + temp;
-   os.seekp(18);
-   os << temp;
-   //cout << temp << endl;
-}
-/*
-template<class ItemType>
-ostream& SequenceSet<ItemType>::operator<<(ostream& os, const SequenceSet& object)
-{
-    return os;
-}
-*/
 template<class ItemType>
 void SequenceSet<ItemType>::setPrevBlock(const int& prvBlock)
 {
@@ -250,12 +173,6 @@ template<class ItemType>
 void SequenceSet<ItemType>::setBlockItem(const ItemType& item)
 {
     block.push_back(item);
-}
-
-template<class ItemType>
-void SequenceSet<ItemType>::setChildItem(const int& item)
-{
-    children.push_back(item);
 }
 
 template<class ItemType>
@@ -324,12 +241,6 @@ Record SequenceSet<ItemType>::getBlockRecord(const int& pos) const
     return block[pos];
 }
 
-template<class ItemType>
-int SequenceSet<ItemType>::getChildPos(const int& pos) const
-{
-    if(!children.empty())
-        return children[pos];
-}
 
 template<class ItemType>
 int SequenceSet<ItemType>::getBlockSize() const
@@ -338,22 +249,9 @@ int SequenceSet<ItemType>::getBlockSize() const
 }
 
 template<class ItemType>
-int SequenceSet<ItemType>::getChildrenVecSize() const
-{
-   return children.size();
-}
-
-template<class ItemType>
 vector<ItemType> SequenceSet<ItemType>::getBlock() const
 {
     return block;
 }
-
-template<class ItemType>
-vector<int> SequenceSet<ItemType>::getChildVec() const
-{
-    return children;
-}
-//#include "SequenceSet.cpp"
 
 #endif // SEQUENCESET_H_INCLUDED

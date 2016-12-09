@@ -31,8 +31,16 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-DINT" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="../CreateInputFile.h" />
+		<Unit filename="../Record.cpp" />
+		<Unit filename="../Record.h" />
+		<Unit filename="../SequenceSet.h" />
+		<Unit filename="../dualHeap.cpp" />
+		<Unit filename="../dualHeap.h" />
+		<Unit filename="../main.cpp" />
+		<Unit filename="../type.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
