@@ -4,6 +4,8 @@
 #define BTREE_H
 
 #include <fstream>
+#include <iostream>
+using namespace std;
 
 const int MaxKeys = 11;   // max number of keys in a node
 const int MaxKeysPlusOne = MaxKeys + 1;
@@ -56,8 +58,10 @@ public:
 	bool Empty(void) const;
 	bool Insert(const ItemType & Item);
 	bool Retrieve(KeyFieldType SearchKey, ItemType & Item);
+
 	void Dump(void);   // for debugging only - could be removed
 	void Check(void);   // for debugging only
+	void printTreeRoot() {cout << "Root: " << Root << endl;}
 
 };
 

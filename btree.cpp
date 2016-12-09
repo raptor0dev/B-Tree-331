@@ -2,6 +2,7 @@
 #include "btree.h"
 #include <iostream>
 #include "SequenceSet.h"
+using namespace std;
 
 /* Given:   Nothing (other than the implicit BTTableClass object)
 Task:    To print out all info associated with the current table.
@@ -101,7 +102,7 @@ void BTTableClass::CheckSubtree(long Current, KeyFieldType & Last)
 			Dump();
 			exit(1);
 		}
-		strcpy(Last, Node.Key[k].KeyField);
+		strcpy_s(Last, Node.Key[k].KeyField);
 	}
 	CheckSubtree(Node.Branch[Node.Count], Last);
 }
