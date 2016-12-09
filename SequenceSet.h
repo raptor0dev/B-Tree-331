@@ -30,7 +30,7 @@ public:
    @post sets item equal to anItem
    @param anItem is data to be stored
    */
-
+   void setPosition(ostream& os, string Value, int offSet, string Type);
    void setAvailList(ostream& os, string availValue);
    void setSequenceHead(ostream& os, string seqHead);
    void setBTreeHead(ostream& os, string bTHead);
@@ -108,6 +108,99 @@ SequenceSet<ItemType>::SequenceSet(const ItemType& anItem, SequenceSet<ItemType>
 {
 } // end constructor
 */
+template<class ItemType>
+void SequenceSet<ItemType>::setPosition(ostream& os, string Value, int offSet, string Type)
+{
+    string temp;
+    temp = Value;
+    string tempzero;
+    int strsize = 8 - temp.length();
+
+    if(Type ==  "Parent")
+    {
+        if(strsize !=0)
+        {
+            for(int i =0; i < strsize; i++)
+            {
+                tempzero += "0";
+            }
+        }
+        temp = tempzero + temp;
+        os.seekp(offSet);
+        os << temp;
+    }
+    else if(Type == "Next")
+    {
+        if(strsize !=0)
+        {
+            for(int i =0; i < strsize; i++)
+            {
+                tempzero += "0";
+            }
+        }
+        temp = tempzero + temp;
+        os.seekp(offSet);
+        os << temp;
+    }
+    else if(Type == "Prev")
+    {
+        if(strsize !=0)
+        {
+            for(int i =0; i < strsize; i++)
+            {
+                tempzero += "0";
+            }
+        }
+        temp = tempzero + temp;
+        os.seekp(offSet);
+        os << temp;
+    }
+    else if(Type == "Avail")
+    {
+        availList = atoi(Value.c_str());
+        if(strsize !=0)
+        {
+            for(int i =0; i < strsize; i++)
+            {
+                tempzero += "0";
+            }
+        }
+        temp = tempzero + temp;
+        os.seekp(offSet);
+        os << temp;
+    }
+
+    else if(Type == "SeqSet")
+    {
+        sequenceHead = atoi(Value.c_str());
+        if(strsize !=0)
+        {
+            for(int i =0; i < strsize; i++)
+            {
+                tempzero += "0";
+            }
+        }
+        temp = tempzero + temp;
+        os.seekp(offSet);
+        os << temp;
+    }
+
+    else if(Type == "BTree")
+    {
+        bTreeHead = atoi(Value.c_str());
+        if(strsize !=0)
+        {
+            for(int i =0; i < strsize; i++)
+            {
+                tempzero += "0";
+            }
+        }
+        temp = tempzero + temp;
+        os.seekp(offSet);
+        os << temp;
+    }
+
+}
 
 template<class ItemType>
 void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
