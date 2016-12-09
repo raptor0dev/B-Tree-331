@@ -423,15 +423,23 @@ int main(int argc, char *argv[])
 
     //blockObj.writeToFile(ofs, recObj, 27);
 
-    /*
+    SSblockObj.setAvailList(ofs, "0");
+    SSblockObj.setSequenceHead(ofs, "27");
+    SSblockObj.setBTreeHead(ofs, "0");
+
+    int availListHead = 0, seqSetHead = 27, bTreeHead = 0;
+
+    //** read in sorted.txt **//
     while (ifs.peek() != EOF)
     {
+        recObj.extractFileFront();
+        BTblockObj.searchForBlock(recObj.RECOBJGETFIELD,);
         if (blockObj.getBlockSize())
         recObj.extractFileFront();
         blockObj.writeToFile(ofs, recObj, pos);
         pos += recObj.getRecordSize();
     }
-    */
+
     ifs.close();
     ofs.close();
     ifs.clear();

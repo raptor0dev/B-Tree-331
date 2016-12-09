@@ -76,7 +76,7 @@ void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, int pos)
     {
         os << initString << "," << initInt << "|";
     }
-    os << initCharPos << '^' << initCharPos << '<' << initCharPos << '>' << endl;
+    os << initCharPos << '^' << initCharPos << '<' << initCharPos << '>' << "00#" << endl;
 }
 
 template<class ItemType>

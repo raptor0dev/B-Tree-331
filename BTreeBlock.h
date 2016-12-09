@@ -56,8 +56,8 @@ BTreeBlock<ItemType>::BTreeBlock(const int& blckSize)
 template<class ItemType>
 void BTreeBlock<ItemType>::writeEmptyBlock(ostream& os, int pos)
 {
-    string initKey = "-", initCharPos = "0";
-    initKey.resize(4, '-');
+    string initKey = "0", initCharPos = "0";
+    initKey.resize(4, '0');
     initCharPos.resize(8, '0');
     os.seekp(pos);
 
@@ -76,7 +76,7 @@ void BTreeBlock<ItemType>::writeEmptyBlock(ostream& os, int pos)
         os << initCharPos << ':';
     }
 
-    os << endl;
+    os << "00#" << endl;
 }
 
 template<class ItemType>
