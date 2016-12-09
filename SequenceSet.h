@@ -20,6 +20,7 @@ private:
    vector<ItemType> block; //
    vector<int> children;
    int prevBlock, nextBlock, parentBlock, blockSize;
+   int availList, sequenceHead, bTreeHead;
 
 public:
    SequenceSet(ostream& os, const int& blockSize);  //default constructor
@@ -30,11 +31,17 @@ public:
    @param anItem is data to be stored
    */
 
+   void setAvailList(ostream& os, string availValue);
+   void setSequenceHead(ostream& os, string seqHead);
+   void setBTreeHead(ostream& os, string bTHead);
    void setPrevBlock(const int& prvBlock);
    void setNextBlock(const int& nxtBlock);
    void setParentBlock(const int& prntBlock);
    void setBlockItem(const ItemType& item);
    void setChildItem(const int& item);
+   int getAvailList() const;
+   int getSequenceHead() const;
+   int getBTreeHead() const;
    int getPrevBlock() const;
    int getNextBlock() const;
    int getParentBlock() const;
@@ -102,7 +109,68 @@ SequenceSet<ItemType>::SequenceSet(const ItemType& anItem, SequenceSet<ItemType>
 } // end constructor
 */
 
+template<class ItemType>
+void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
+{
+    string temp;
+    temp = availValue;
+   availList = atoi(availValue.c_str());
+   int strsize = 8 - temp.length();
+   string tempzero;
+   if(strsize !=0)
+   {
+       for(int i =0; i < strsize; i++)
+       {
+           tempzero += "0";
+       }
+   }
+   temp = tempzero + temp;
+   os.seekp(0);
+   os << temp;
+   //cout << temp << endl;
+}
 
+template<class ItemType>
+void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
+{
+   string temp;
+   temp = seqHead;
+   sequenceHead = atoi(seqHead.c_str());
+   int strsize = 8 - temp.length();
+   string tempzero;
+   if(strsize !=0)
+   {
+       for(int i =0; i < strsize; i++)
+       {
+           tempzero += "0";
+       }
+   }
+   temp = tempzero + temp;
+   os.seekp(9);
+   os << temp;
+   //cout << temp << endl;
+}
+
+template<class ItemType>
+void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)
+{
+        string temp;
+    temp = bTHead;
+   bTreeHead = atoi(bTHead.c_str());
+   int strsize = 8 - temp.length();
+   string tempzero;
+   if(strsize !=0)
+   {
+       for(int i =0; i < strsize; i++)
+       {
+           tempzero += "0";
+       }
+   }
+   temp = tempzero + temp;
+   os.seekp(18);
+   os << temp;
+   //cout << temp << endl;
+}
 
 template<class ItemType>
 void SequenceSet<ItemType>::setPrevBlock(const int& prvBlock)
@@ -134,6 +202,23 @@ void SequenceSet<ItemType>::setChildItem(const int& item)
     children.push_back(item);
 }
 
+template<class ItemType>
+int SequenceSet<ItemType>::getAvailList() const
+{
+   return availList;
+}
+
+template<class ItemType>
+int SequenceSet<ItemType>::getSequenceHead() const
+{
+   return sequenceHead;
+}
+
+template<class ItemType>
+int SequenceSet<ItemType>::getBTreeHead() const
+{
+   return bTreeHead;
+}
 
 template<class ItemType>
 int SequenceSet<ItemType>::getPrevBlock() const
