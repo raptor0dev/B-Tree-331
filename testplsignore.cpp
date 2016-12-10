@@ -1,14 +1,13 @@
 #include "btree.h"
 #include <iostream>
-//const int LineMax = KeyFieldMax +1 + DFMaxPlus1;
 using namespace std;
 
-void Read(ifstream & InputFile, KeyFieldType Word, DataFieldType Definition)
+void read(ifstream & sequenceSet, KeyFieldType key, DataFieldType field2)
 {
-	InputFile.get(Word, KeyFieldMax+1);
-	InputFile.get();
-	InputFile.get(Definition, DataFieldMax+1);
-	InputFile.get();
+	sequenceSet.get(key, KeyFieldMax+1);
+	sequenceSet.get();
+	sequenceSet.get(field2, DataFieldMax+1);
+	sequenceSet.get();
 	//cout << "word " << Word << endl;
 	//cout << "data " << Definition << endl;
 	//cout << endl;
@@ -18,33 +17,40 @@ void Read(ifstream & InputFile, KeyFieldType Word, DataFieldType Definition)
 Task:   To read the data from InputFile and load it into the Table.
 Return: Table       The B-tree table containing the data.
 */
-void Load(ifstream & InputFile, BTTableClass & Table)
+/**
+* @brief builds the tree from a sorted input file.
+* @pre have 
+* @post builds the entire B+ tree
+* @param sequenceSet The file to build the tree from
+* @param tree The BTree object to build into
+* @return void
+*/
+void loadTree(ifstream & sequenceSet,BTree & tree)
 {
 	ItemType Item;
-	Read(InputFile, Item.KeyField, Item.DataField);
+	read(sequenceSet, Item.KeyField, Item.DataField);
 
-	while (!InputFile.fail())
+	while (!sequenceSet.fail())
 	{
-		Table.Insert(Item);
-		Read(InputFile, Item.KeyField, Item.DataField);
+		tree.insert(Item);
+		read(sequenceSet, Item.KeyField, Item.DataField);
 	}
 }
 
 int main(void)
 {
 	ifstream sortedInput;
-	BTTableClass BTTable('w', "superbtree.txt");
+	BTree mainTree('w', "outputTree.txt");
 
 	sortedInput.open("testsort.txt", ios::in);
 	if (sortedInput.fail())
 	{
-		cerr << "ERROR: Unable to open file btree.txt" << endl;
+		cout << "Error: unable to open file btree.txt" << endl;
 		exit(1);
 	}
-	Load(sortedInput, BTTable);
+	loadTree(sortedInput, mainTree);
 	sortedInput.close();
-	BTTable.Dump();
-	BTTable.printTreeRoot();
+	mainTree.dump();
 
 	int x;
 	cin >> x;
