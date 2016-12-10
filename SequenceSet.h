@@ -13,7 +13,7 @@
 
 using namespace std;
 
-template<class ItemType>
+template<class itemType>
 class SequenceSet
 {
 private:
@@ -37,7 +37,7 @@ public:
    void setPrevBlock(const int& prvBlock);
    void setNextBlock(const int& nxtBlock);
    void setParentBlock(const int& prntBlock);
-   void setBlockItem(const ItemType& item);
+   void setBlockItem(const itemType& item);
    int getAvailList() const;
    int getSequenceHead() const;
    int getBTreeHead() const;
@@ -45,15 +45,15 @@ public:
    int getNextBlock() const;
    int getParentBlock() const;
    int getBlockSize() const;
-   ItemType getBlockItem(const ItemType& key, const string& type) const;
+   itemType getBlockItem(const itemType& key, const string& type) const;
    Record getBlockRecord(const int& pos) const;
-   vector<ItemType> getBlock() const;
+   vector<itemType> getBlock() const;
    void writeToFile(ostream& os, const Record& object, const int& pos);
    void writeEmptyBlock(ostream& os, int pos);
 }; // end Node
 
-template<class ItemType>
-SequenceSet<ItemType>::SequenceSet(ostream& os, const int& blckSize)
+template<class itemType>
+SequenceSet<itemType>::SequenceSet(ostream& os, const int& blckSize)
 {
     blockSize = blckSize;
     string initInt = "0";
@@ -63,8 +63,8 @@ SequenceSet<ItemType>::SequenceSet(ostream& os, const int& blckSize)
     writeEmptyBlock(os, os.tellp());
 } // end default constructor
 
-template<class ItemType>
-void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, int pos)
+template<class itemType>
+void SequenceSet<itemType>::writeEmptyBlock(ostream& os, int pos)
 {
     string initString = "-", initInt = "0", initCharPos = "0";
     initString.resize(4, '-');
@@ -79,15 +79,15 @@ void SequenceSet<ItemType>::writeEmptyBlock(ostream& os, int pos)
     os << initCharPos << '^' << initCharPos << '<' << initCharPos << '>' << "00#" << endl;
 }
 
-template<class ItemType>
-void SequenceSet<ItemType>::writeToFile(ostream& os, const Record& object, const int& pos)
+template<class itemType>
+void SequenceSet<itemType>::writeToFile(ostream& os, const Record& object, const int& pos)
 {
     os.seekp(pos);
     os << object;
 }
 
-template<class ItemType>
-void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
+template<class itemType>
+void SequenceSet<itemType>::setAvailList(ostream& os, string availValue)
 {
    string temp;
    temp = availValue;
@@ -107,8 +107,8 @@ void SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
    //cout << temp << endl;
 }
 
-template<class ItemType>
-void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
+template<class itemType>
+void SequenceSet<itemType>::setSequenceHead(ostream& os, string seqHead)
 {
 
    string temp;
@@ -130,8 +130,8 @@ void SequenceSet<ItemType>::setSequenceHead(ostream& os, string seqHead)
 }
 
 
-template<class ItemType>
-void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)
+template<class itemType>
+void SequenceSet<itemType>::setBTreeHead(ostream& os, string bTHead)
 {
    string temp;
    temp = bTHead;
@@ -151,68 +151,68 @@ void SequenceSet<ItemType>::setBTreeHead(ostream& os, string bTHead)
    //cout << temp << endl;
 }
 
-template<class ItemType>
-void SequenceSet<ItemType>::setPrevBlock(const int& prvBlock)
+template<class itemType>
+void SequenceSet<itemType>::setPrevBlock(const int& prvBlock)
 {
    prevBlock = prvBlock;
 }
 
-template<class ItemType>
-void SequenceSet<ItemType>::setNextBlock(const int& nxtBlock)
+template<class itemType>
+void SequenceSet<itemType>::setNextBlock(const int& nxtBlock)
 {
     nextBlock = nxtBlock;
 }
 
-template<class ItemType>
-void SequenceSet<ItemType>::setParentBlock(const int& prntBlock)
+template<class itemType>
+void SequenceSet<itemType>::setParentBlock(const int& prntBlock)
 {
     parentBlock = prntBlock;
 }
 
-template<class ItemType>
-void SequenceSet<ItemType>::setBlockItem(const ItemType& item)
+template<class itemType>
+void SequenceSet<itemType>::setBlockItem(const itemType& item)
 {
     block.push_back(item);
 }
 
-template<class ItemType>
-int SequenceSet<ItemType>::getAvailList() const
+template<class itemType>
+int SequenceSet<itemType>::getAvailList() const
 {
    return availList;
 }
 
-template<class ItemType>
-int SequenceSet<ItemType>::getSequenceHead() const
+template<class itemType>
+int SequenceSet<itemType>::getSequenceHead() const
 {
    return sequenceHead;
 }
 
-template<class ItemType>
-int SequenceSet<ItemType>::getBTreeHead() const
+template<class itemType>
+int SequenceSet<itemType>::getBTreeHead() const
 {
    return bTreeHead;
 }
 
-template<class ItemType>
-int SequenceSet<ItemType>::getPrevBlock() const
+template<class itemType>
+int SequenceSet<itemType>::getPrevBlock() const
 {
     return prevBlock;
 }
 
-template<class ItemType>
-int SequenceSet<ItemType>::getNextBlock() const
+template<class itemType>
+int SequenceSet<itemType>::getNextBlock() const
 {
     return nextBlock;
 }
 
-template<class ItemType>
-int SequenceSet<ItemType>::getParentBlock() const
+template<class itemType>
+int SequenceSet<itemType>::getParentBlock() const
 {
     return parentBlock;
 }
 
-template<class ItemType>
-ItemType SequenceSet<ItemType>::getBlockItem(const ItemType& key, const string& type) const
+template<class itemType>
+itemType SequenceSet<itemType>::getBlockItem(const itemType& key, const string& type) const
 {
     for (int index = 0; index < block.size(); index++)
     {
@@ -235,21 +235,21 @@ ItemType SequenceSet<ItemType>::getBlockItem(const ItemType& key, const string& 
     }
 }
 
-template<class ItemType>
-Record SequenceSet<ItemType>::getBlockRecord(const int& pos) const
+template<class itemType>
+Record SequenceSet<itemType>::getBlockRecord(const int& pos) const
 {
     return block[pos];
 }
 
 
-template<class ItemType>
-int SequenceSet<ItemType>::getBlockSize() const
+template<class itemType>
+int SequenceSet<itemType>::getBlockSize() const
 {
    return block.size();
 }
 
-template<class ItemType>
-vector<ItemType> SequenceSet<ItemType>::getBlock() const
+template<class itemType>
+vector<itemType> SequenceSet<itemType>::getBlock() const
 {
     return block;
 }

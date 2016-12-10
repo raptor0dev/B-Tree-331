@@ -1,166 +1,137 @@
-//btree.cpp
+/**
+@file btree.cpp
+@author Burg, Christopher N., Garrett Kamrath, Jesse Babcock, Dayitwa Shrestha, Sanam Lama, Kapil Joshi
+@date December 9, 2016
+@version revision 1.2
+
+@brief B+Tree File operations
+
+@details
+The B+ Tree class represents all operations assoicated with a B+Tree.
+It works almost entirely off disk, only keeping the root and its current working node
+in memory. Can insert and build a tree off a sorted sequence set.
+*/
 #include "btree.h"
 #include <iostream>
 #include "SequenceSet.h"
 using namespace std;
 
-/* Given:   Nothing (other than the implicit BTTableClass object)
-Task:    To print out all info associated with the current table.
-Note that this is for debugging purposes.  This function
-could be removed once debugging is complete.
-Return:  Nothing.
-*/
 void BTree::dump(void)
 {
 	int k;
 	long p;
-
 	printTreeRoot();
 
-	for (p = 0; p <= NumNodes; p++)
+	for (p = 0; p <= nodeNum; p++)
 	{
 		if (p % 4 == 3)
 		{
-			cout << " Press ENTER";
+			cout << "enter for more nodes";
 			cin.get();
 		}
 
-		DataFile.seekg(p * NodeSize, ios::beg);
-		DataFile.read(reinterpret_cast <char *> (&CurrentNode), NodeSize);
+		workingFile.seekg(p * nodeSize, ios::beg);
+		workingFile.read(reinterpret_cast <char *> (&workingNode), nodeSize);
 
 		if (p == 0)
 		{
-			cout << "Node 0 is not part of tree, contains this data:" << endl;
-			cout << "   NumItems = " << CurrentNode.Branch[0] << endl;
-			cout << "   NumNodes = " << CurrentNode.Branch[1] << endl;
-			cout << "   Root = " << CurrentNode.Branch[2] << endl;
+			cout << "Node 0 is the header, contains:" << endl;
+			cout << "   items in the node = " << workingNode.charOffset[0] << endl;
+			cout << "   number of nodes = " << workingNode.charOffset[1] << endl;
+			cout << "   root = " << workingNode.charOffset[2] << endl;
 		}
 		else
 		{
-			cout << "Dump of node number " << p << endl;
-			cout << "   Count: " << CurrentNode.Count << endl;
+			cout << " node number " << p <<" info"<< endl;
+			cout << "   keyNum: " << workingNode.keyCount << endl;
 
-			cout << "   Keys: ";
-			for (k = 0; k < CurrentNode.Count; k++)
-				cout << CurrentNode.Key[k].KeyField << " ";
+			cout << "   key values: ";
+			for (k = 0; k < workingNode.keyCount; k++)
+			{
+				cout << workingNode.Key[k].KeyField << " ";
+			}
 
-			cout << endl << "   Branches: ";
-			for (k = 0; k <= CurrentNode.Count; k++)
-				cout << CurrentNode.Branch[k] << " ";
+			cout << endl << "   Branch Nodes: ";
+			for (k = 0; k <= workingNode.keyCount; k++)
+			{
+				cout << workingNode.charOffset[k] << " ";
+			}
 			cout << endl << endl;
 		}
 	}
 }
 
-
-/* Given:   Nothing (other than the implicit BTTableClass object)
-Task:    To do an inorder traversal of the B-Tree looking for out of
-order items.
-Note that this is for debugging purposes.  This function
-could be removed once debugging is complete.
-Return:  Nothing.
-*/
-void BTree::check(void)
+void BTree::checkTree(long rootPointer, keyType & lastPointer)
 {
-	KeyFieldType Last;
-
-	Last[0] = '*';
-	Last[1] = NULLCHAR;
-	checkSubtree(Root, Last);
-}
-
-
-/* Given:   The implicit BTTableClass object plus:
-Current   A pseudopointer to the root node of the subtree.
-Last      The Last key field value that was checked.
-Task:    To do an inorder traversal of the subtree rooted at the
-current node.  Each key field value is checked against Last
-to see if it is out of order relative to Last.  If so,
-debugging info is printed, including a complete dump of
-the B-tree.
-Note that this is for debugging purposes.  This function
-could be removed once debugging is complete.
-Return:  Last      Updated to hold the last key field value checked.
-*/
-void BTree::checkSubtree(long Current, KeyFieldType & Last)
-{
-	NodeType Node;
+	treeNode Node;
 	int k;
 
-	if (Current == NilPtr)
-		return;
-
-	DataFile.seekg(Current * NodeSize, ios::beg);
-	DataFile.read(reinterpret_cast <char *> (&Node), NodeSize);
-	for (k = 0; k < Node.Count; k++)
+	if (rootPointer == nullPointer)
 	{
-		checkSubtree(Node.Branch[k], Last);
-		if ((Last[0] != '*') && (strcmp(Last, Node.Key[k].KeyField) >= 0))
+		return;
+	}
+
+	workingFile.seekg(rootPointer * nodeSize, ios::beg);
+	workingFile.read(reinterpret_cast <char *> (&Node), nodeSize); //fancy magic
+	for (k = 0; k < Node.keyCount; k++)
+	{
+		checkTree(Node.charOffset[k], lastPointer);
+		if ((lastPointer[0] != '*') && (strcmp(lastPointer, Node.Key[k].KeyField) >= 0))
 		{
-			cout << "Check has found a problem in node " << Current <<
+			cout << "Check has found a problem in node " <<rootPointer <<
 				" index " << k << " key " << Node.Key[k].KeyField << endl;
 			dump();
 			exit(1);
 		}
-		strcpy_s(Last, Node.Key[k].KeyField);
+		strcpy_s(lastPointer, Node.Key[k].KeyField);
 	}
-	checkSubtree(Node.Branch[Node.Count], Last);
+	checkTree(Node.charOffset[Node.keyCount], lastPointer);
 }
 
-
-/* Given:   Mode      A char(r or w) to indicate read or write mode.
-FileName  A char string holding the external filename.
-Task:    This is the constructor for a BTTableClass object.  If mode
-r is specified, it opens the table stored in the given file
-for reading.  If w is specified, it opens a new, empty table
-for writing (to the given file).  A new empty table contains
-a "dummy" node (node zero) that will be used to hold info
-about the whole table.
-Return:  Nothing directly, but the implicit object is created.
-*/
-BTree::BTree(char Mode, char * FileName)
+BTree::BTree(char mode, char * fileName)
 {
-	OpenMode = Mode;
-	NodeSize = sizeof(NodeType);
+	rwMode = mode;
+	nodeSize = sizeof(treeNode);
 
-	if (Mode == 'r')
+	if (mode == 'r')
 	{
-		DataFile.open(FileName, ios::in | ios::binary);
-		if (DataFile.fail())
+		workingFile.open(fileName, ios::in | ios::binary);
+		if (workingFile.fail())
 		{
 			cout << "Input file cannot be opened" << endl;
 		}
 
-		DataFile.read(reinterpret_cast <char *> (&CurrentNode), NodeSize);
-		if (DataFile.fail())
-		{   // assume the Btree is empty if you cannot read from the file
-			NumItems = 0;
-			NumNodes = 0;
-			Root = NilPtr;
+		//initializes header info to 0/null if cant read
+		workingFile.read(reinterpret_cast <char *> (&workingNode), nodeSize);
+		if (workingFile.fail())
+		{ 
+			itemNum = 0;
+			nodeNum = 0;
+			Root = nullPointer;
 		}
-		else   // Node zero is not a normal node, it contains the following:
+		else   //node at 0 is header info
 		{
-			NumItems = CurrentNode.Branch[0];
-			NumNodes = CurrentNode.Branch[1];
-			Root = CurrentNode.Branch[2];
+			itemNum = workingNode.charOffset[0];
+			nodeNum = workingNode.charOffset[1];
+			Root = workingNode.charOffset[2];
 		}
 	}
-	else if (Mode == 'w')
+	else if (mode == 'w')
 	{
-		DataFile.open(FileName, ios::in | ios::out | ios::trunc |ios::binary);
-		if (DataFile.fail())
+		workingFile.open(fileName, ios::in | ios::out | ios::trunc |ios::binary);
+		if (workingFile.fail())
 		{
 			cout << "Input file failed to open" << endl;
 		}
 
-		Root = NilPtr;
-		NumItems = 0;
-		NumNodes = 0;   // number does not include the special node zero
-		CurrentNode.Branch[0] = NumItems;
-		CurrentNode.Branch[1] = NumNodes;
-		CurrentNode.Branch[2] = Root;
-		DataFile.seekp(0, ios::beg);
-		DataFile.write(reinterpret_cast <char *> (&CurrentNode), NodeSize);
+		Root = nullPointer;
+		itemNum = 0;
+		nodeNum = 0; 
+		workingNode.charOffset[0] = itemNum;
+		workingNode.charOffset[1] = nodeNum;
+		workingNode.charOffset[2] = Root;
+		workingFile.seekp(0, ios::beg);
+		workingFile.write(reinterpret_cast <char *> (&workingNode), nodeSize);
 	}
 	else
 	{
@@ -168,52 +139,37 @@ BTree::BTree(char Mode, char * FileName)
 	}
 }
 
-/* Given:   Nothing (other than the implicit object).
-Task:    This is the destructor for a BTTableClass object.  Its job
-is to destroy the BTTableClass object, while making sure that
-all of the table data is stored in the associated file.
-Return:  Nothing directly, but the file is updated.
-*/
 BTree::~BTree(void)
 {
-	if (OpenMode == 'w')
+	//writes header info
+	if (rwMode == 'w')
 	{
-		//  Be sure to write out the updated node zero:
-		CurrentNode.Branch[0] = NumItems;
-		CurrentNode.Branch[1] = NumNodes;
-		CurrentNode.Branch[2] = Root;
-		DataFile.seekp(0, ios::beg);
-		DataFile.write(reinterpret_cast <char *> (&CurrentNode), NodeSize);
+		workingNode.charOffset[0] = itemNum;
+		workingNode.charOffset[1] = nodeNum;
+		workingNode.charOffset[2] = Root;
+		workingFile.seekp(0, ios::beg);
+		workingFile.write(reinterpret_cast <char *> (&workingNode), nodeSize);
 	}
-	DataFile.close();
+	workingFile.close();
 }
 
-/* Given:   The implicit BTTableClass object as well as:
-Target        The value to look for in the CurrentNode field.
-Task:    To look for Target as a key in CurrentNode.
-Return:  In the function name, return true if found, false otherwise.
-Location      The index of where Target was found.  If not
-found, index and index + 1 are the indices between
-which Target would fit.  (If Target fits to the
-left of the first key, returns index of -1.)
-*/
-bool BTree::searchNode(const KeyFieldType Target,int & Location) const
+bool BTree::searchNode(const keyType targetKey,int & Location) const
 {
 	bool Found;
 	Found = false;
 
-	if (strcmp(Target, CurrentNode.Key[0].KeyField) < 0)
+	if (strcmp(targetKey, workingNode.Key[0].KeyField) < 0)
 	{
 		Location = -1;
 	}
 	else
-	{ // do a sequential search, right to left:
-		Location = CurrentNode.Count - 1;
-		while ((strcmp(Target, CurrentNode.Key[Location].KeyField) < 0) && (Location > 0))
+	{ 
+		Location = workingNode.keyCount - 1;
+		while ((strcmp(targetKey, workingNode.Key[Location].KeyField) < 0) && (Location > 0))
 		{
 			Location--;
 		}
-		if (strcmp(Target, CurrentNode.Key[Location].KeyField) == 0)
+		if (strcmp(targetKey, workingNode.Key[Location].KeyField) == 0)
 		{
 			Found = true;
 		}
@@ -221,217 +177,161 @@ bool BTree::searchNode(const KeyFieldType Target,int & Location) const
 	return Found;
 }
 
-
-/* Given:   The implicit BTTableClass object as well as:
-NewItem       Item to add to Node.
-NewRight      Pseudopointer to right subtree below NewItem.
-Node          The node to be added to.
-Location      The index at which to add newItem.
-Task:    To add Item to Node at index Location, and add NewRight
-as the branch just to the right of NewItem.  The addition is
-made by moving the needed keys and branches right by 1 in order
-to clear out index Location for NewItem.
-Return:  Node          Updated node.
-*/
-void BTree::addItem(const ItemType & NewItem, long NewRight,
-	NodeType & Node, int Location)
+void BTree::addItem(const itemType & newItem, long rightPointer,
+	treeNode & node, int location)
 {
 	int j;
 
-	for (j = Node.Count; j > Location; j--)
+	for (j = node.keyCount; j > location; j--)
 	{
-		Node.Key[j] = Node.Key[j - 1];
-		Node.Branch[j + 1] = Node.Branch[j];
+		node.Key[j] = node.Key[j - 1];
+		node.charOffset[j + 1] = node.charOffset[j];
 	}
 
-	Node.Key[Location] = NewItem;
-	Node.Branch[Location + 1] = NewRight;
-	Node.Count++;
+	node.Key[location] = newItem;
+	node.charOffset[location + 1] = rightPointer;
+	node.keyCount++;
 }
 
-
-/* Given: The implicit BTTableClass object as well as:
-CurrentItem    Item whose attempted placement into a node is
-causing the node to be split.
-CurrentRight   Pseudopointer to the child just to the right of
-CurrentItem.
-CurrentRoot    Pseudopointer to the node to be split.
-Location       Index of where CurrentItem should go in this node.
-Task:   To split the node that CurrentRoot points to into 2 nodes,
-pointed to by CurrentRoot and NewRight.  CurrentItem is properly
-placed in 1 of these 2 nodes (unless it is the median that gets
-moved up to the parent).  Finds Newitem, the median item that is
-to be moved up to the parent node.
-Return: NewItem        The item to be moved up into the parent node.
-NewRight       The pseudopointer to the child to the right of
-NewItem (i.e. a pointer to the new RightNode).
-*/
-void BTree::split(const ItemType & CurrentItem, long CurrentRight,
-	long CurrentRoot, int Location, ItemType & NewItem, long & NewRight)
+void BTree::split(const itemType & splitNode, long rightChild,
+	long rootPointer, int addIndex, itemType & newItem, long & newRightPointer)
 {
 	int j, Median;
-	NodeType RightNode;
+	treeNode RightNode;
 
-	if (Location < MinKeys)
-		Median = MinKeys;
+	if (addIndex < keyMin)
+	{
+		Median = keyMin;
+	}
 	else
-		Median = MinKeys + 1;
-
-	DataFile.seekg(CurrentRoot * NodeSize, ios::beg);
-	DataFile.read(reinterpret_cast <char *> (&CurrentNode), NodeSize);
-
-	for (j = Median; j < MaxKeys; j++)
-	{  // move half of the items to the RightNode
-		RightNode.Key[j - Median] = CurrentNode.Key[j];
-		RightNode.Branch[j - Median + 1] = CurrentNode.Branch[j + 1];
+	{
+		Median = keyMin + 1;
 	}
 
-	RightNode.Count = MaxKeys - Median;
-	CurrentNode.Count = Median;   // is then incremented by AddItem
+	workingFile.seekg(rootPointer * nodeSize, ios::beg);
+	workingFile.read(reinterpret_cast <char *> (&workingNode), nodeSize);
 
-								  // put CurrentItem in place
-	if (Location < MinKeys)
-		addItem(CurrentItem, CurrentRight, CurrentNode, Location + 1);
+	for (j = Median; j < keyMax; j++)
+	{  // move half of the items to the new right node
+		RightNode.Key[j - Median] = workingNode.Key[j];
+		RightNode.charOffset[j - Median + 1] = workingNode.charOffset[j + 1];
+	}
+
+	RightNode.keyCount = keyMax - Median;
+	workingNode.keyCount = Median;   // is then incremented by AddItem
+
+	if (addIndex < keyMin)
+	{
+		addItem(splitNode, rightChild, workingNode, addIndex + 1);
+	}
 	else
-		addItem(CurrentItem, CurrentRight, RightNode,
-			Location - Median + 1);
+	{
+		addItem(splitNode, rightChild, RightNode,
+			addIndex - Median + 1);
+	}
 
-	NewItem = CurrentNode.Key[CurrentNode.Count - 1];
-	RightNode.Branch[0] = CurrentNode.Branch[CurrentNode.Count];
-	CurrentNode.Count--;
+	newItem = workingNode.Key[workingNode.keyCount - 1];
+	RightNode.charOffset[0] = workingNode.charOffset[workingNode.keyCount];
+	workingNode.keyCount--;
 
-	DataFile.seekp(CurrentRoot * NodeSize, ios::beg);
-	DataFile.write(reinterpret_cast <char *> (&CurrentNode), NodeSize);
+	workingFile.seekp(rootPointer * nodeSize, ios::beg);
+	workingFile.write(reinterpret_cast <char *> (&workingNode), nodeSize);
 
-	NumNodes++;
-	NewRight = NumNodes;
-	DataFile.seekp(NewRight * NodeSize, ios::beg);
-	DataFile.write(reinterpret_cast <char *> (&RightNode), NodeSize);
+	nodeNum++;
+	newRightPointer = nodeNum;
+	workingFile.seekp(newRightPointer * nodeSize, ios::beg);
+	workingFile.write(reinterpret_cast <char *> (&RightNode), nodeSize);
 
 }
 
-
-/* Given:  The implicit BTTableClass object as well as:
-CurrentItem   The item to be inserted into the B-tree table.
-CurrentRoot   Pseudopointer to root of current subtree.
-Task:   To find where to put CurrentItem in a node of the subtree with
-the given root.  CurrentItem is ordinarily inserted, though
-a duplicate item is refused.  It is also possible that
-CurrentItem might be the item moved up to be inserted into
-the parent node if a split is done.
-Return: MoveUp        True if NewItem (and associated NewRight pointer)
-must be placed in the parent node due to
-splitting, false otherwise.
-NewItem       Item to be placed into parent node if a split was
-done.
-NewRight      Pseudopointer to child to the right of NewItem.
-*/
-void BTree::pushDown(const ItemType & CurrentItem, long CurrentRoot,
-	bool & MoveUp, ItemType & NewItem, long & NewRight)
+void BTree::pushDown(const itemType & addNewItem, long rootPointer,
+	bool & moveToParent, itemType & newItem, long & rightPointer)
 {
 	int Location;
 
-	if (CurrentRoot == NilPtr)   // stopping case
-	{   // cannot insert into empty tree
-		MoveUp = true;
-		NewItem = CurrentItem;
-		NewRight = NilPtr;
+	if (rootPointer == nullPointer)   // base case
+	{ 
+		moveToParent = true;
+		newItem = addNewItem;
+		rightPointer = nullPointer;
 	}
-	else   // recursive case
+	else   //recursive case
 	{
-		DataFile.seekg(CurrentRoot * NodeSize, ios::beg);
-		DataFile.read(reinterpret_cast <char *> (&CurrentNode), NodeSize);
+		workingFile.seekg(rootPointer * nodeSize, ios::beg);
+		workingFile.read(reinterpret_cast <char *> (&workingNode), nodeSize);
 
-		if (searchNode(CurrentItem.KeyField, Location))
+		if (searchNode(addNewItem.KeyField, Location))
 			cout << "Error: attempt to put a duplicate into B-tree" << endl;
 
-		pushDown(CurrentItem, CurrentNode.Branch[Location + 1], MoveUp,
-			NewItem, NewRight);
+		pushDown(addNewItem, workingNode.charOffset[Location + 1], moveToParent, newItem, rightPointer);
 
-		if (MoveUp)
+		if (moveToParent)
 		{
-			DataFile.seekg(CurrentRoot * NodeSize, ios::beg);
-			DataFile.read(reinterpret_cast <char *> (&CurrentNode), NodeSize);
+			workingFile.seekg(rootPointer * nodeSize, ios::beg);
+			workingFile.read(reinterpret_cast <char *> (&workingNode), nodeSize);
 
-			if (CurrentNode.Count < MaxKeys)
+			if (workingNode.keyCount < keyMax)
 			{
-				MoveUp = false;
-				addItem(NewItem, NewRight, CurrentNode, Location + 1);
-				DataFile.seekp(CurrentRoot * NodeSize, ios::beg);
-				DataFile.write(reinterpret_cast <char *> (&CurrentNode),
-					NodeSize);
+				moveToParent = false;
+				addItem(newItem, rightPointer, workingNode, Location + 1);
+				workingFile.seekp(rootPointer * nodeSize, ios::beg);
+				workingFile.write(reinterpret_cast <char *> (&workingNode), nodeSize);
 			}
 			else
 			{
-				MoveUp = true;
-				split(NewItem, NewRight, CurrentRoot, Location,
-					NewItem, NewRight);
+				moveToParent = true;
+				split(newItem, rightPointer, rootPointer, Location, newItem, rightPointer);
 			}
 		}
 	}
 }
 
-
-/* Given:   The implicit BTTableClass object as well as:
-Item       Item to add to the table.
-Task:    To add Item to the table.
-Return:  In the function name, returns true to indicate success.
-(The implicit object is modified, of course.)
-*/
-bool BTree::insert(const ItemType & Item)
+bool BTree::insert(const itemType & addKey)
 {
-	bool MoveUp;
-	long NewRight;
-	ItemType NewItem;
+	bool moveToParent;
+	long rightPointer;
+	itemType newItem;
 
-	pushDown(Item, Root, MoveUp, NewItem, NewRight);
+	pushDown(addKey, Root, moveToParent, newItem, rightPointer);
 
-	if (MoveUp)   // create a new root node
+	if (moveToParent)   // create a new root node
 	{
-		CurrentNode.Count = 1;
-		CurrentNode.Key[0] = NewItem;
-		CurrentNode.Branch[0] = Root;
-		CurrentNode.Branch[1] = NewRight;
-		NumNodes++;
-		Root = NumNodes;
-		DataFile.seekp(NumNodes * NodeSize, ios::beg);
-		DataFile.write(reinterpret_cast <char *> (&CurrentNode), NodeSize);
-
+		workingNode.keyCount = 1;
+		workingNode.Key[0] = newItem;
+		workingNode.charOffset[0] = Root;
+		workingNode.charOffset[1] = rightPointer;
+		nodeNum++;
+		Root = nodeNum;
+		workingFile.seekp(nodeNum * nodeSize, ios::beg);
+		workingFile.write(reinterpret_cast <char *> (&workingNode), nodeSize);
 	}
-
-	NumItems++;   // fixed 12/21/2001
-	return true;   // no reason not to assume success
+	itemNum++;
+	return true;
 }
 
-
-/* Given:   The implicit BTTableClass object as well as:
-SearchKey   Key value to look for in the table.
-Task:    To look for SearchKey in the table.
-Return:  In the function name, true if SearchKey was found,
-false otherwise.
-Item        The item were SearchKey was found.
-*/
-bool BTree::retrieve(KeyFieldType SearchKey, ItemType & Item)
+bool BTree::retrieve(keyType searchKey, itemType & foundNode)
 {
-	long CurrentRoot;
-	int Location;
-	bool Found;
+	long currentRoot;
+	int index;
+	bool found;
 
-	Found = false;
-	CurrentRoot = Root;
+	found = false;
+	currentRoot = Root;
 
-	while ((CurrentRoot != NilPtr) && (!Found))
+	while ((currentRoot != nullPointer) && (!found))
 	{
-		DataFile.seekg(CurrentRoot * NodeSize, ios::beg);
-		DataFile.read(reinterpret_cast <char *> (&CurrentNode), NodeSize);
+		workingFile.seekg(currentRoot * nodeSize, ios::beg);
+		workingFile.read(reinterpret_cast <char *> (&workingNode), nodeSize);
 
-		if (searchNode(SearchKey, Location))
+		if (searchNode(searchKey, index))
 		{
-			Found = true;
-			Item = CurrentNode.Key[Location];
+			found = true;
+			foundNode = workingNode.Key[index];
 		}
 		else
-			CurrentRoot = CurrentNode.Branch[Location + 1];
+		{
+			currentRoot = workingNode.charOffset[index + 1];
+		}
 	}
-	return Found;
+	return found;
 }
