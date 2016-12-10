@@ -61,9 +61,9 @@ void BTreeBlock<ItemType>::writeEmptyBlock(ostream& os, int pos)
     initCharPos.resize(8, '0');
     os.seekp(pos);
 
-    for(int index = 0; index < blockSize; index++)
+    for(int index = 0; index <= blockSize; index++)
     {
-        if (index == blockSize - 1)
+        if (index == blockSize)
             os << initKey << '|';
         else
             os << initKey << ',';

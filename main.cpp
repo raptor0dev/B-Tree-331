@@ -430,15 +430,17 @@ int main(int argc, char *argv[])
     int availListHead = 0, seqSetHead = 27, bTreeHead = 0;
 
     //** read in sorted.txt **//
+    /*
     while (ifs.peek() != EOF)
     {
         recObj.extractFileFront();
         BTblockObj.searchForBlock(recObj.RECOBJGETFIELD,);
+
         if (blockObj.getBlockSize())
         recObj.extractFileFront();
         blockObj.writeToFile(ofs, recObj, pos);
         pos += recObj.getRecordSize();
-    }
+    }*/
 
     ifs.close();
     ofs.close();
