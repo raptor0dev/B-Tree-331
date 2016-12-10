@@ -2,24 +2,26 @@
 #include <iostream>
 using namespace std;
 
-void read(ifstream & sequenceSet, KeyFieldType key, DataFieldType field2)
+/**
+* @brief reads in a record from the file
+* @pre have a file to read in.
+* @post prepares a nodes contents
+* @param sequenceSet The file to build the tree from
+* @param key the value it sorts by
+* @param field2 the other field.
+* @return void
+*/
+void read(ifstream & sequenceSet, keyType key, dataType field2)
 {
-	sequenceSet.get(key, KeyFieldMax+1);
+	sequenceSet.get(key, keySize+1);
 	sequenceSet.get();
-	sequenceSet.get(field2, DataFieldMax+1);
+	sequenceSet.get(field2, dataSize+1);
 	sequenceSet.get();
-	//cout << "word " << Word << endl;
-	//cout << "data " << Definition << endl;
-	//cout << endl;
 }
 
-/* Given:  InputFile   A file stream already opened for input.
-Task:   To read the data from InputFile and load it into the Table.
-Return: Table       The B-tree table containing the data.
-*/
 /**
 * @brief builds the tree from a sorted input file.
-* @pre have 
+* @pre have a file to read in.
 * @post builds the entire B+ tree
 * @param sequenceSet The file to build the tree from
 * @param tree The BTree object to build into
@@ -27,7 +29,7 @@ Return: Table       The B-tree table containing the data.
 */
 void loadTree(ifstream & sequenceSet,BTree & tree)
 {
-	ItemType Item;
+	itemType Item;
 	read(sequenceSet, Item.KeyField, Item.DataField);
 
 	while (!sequenceSet.fail())

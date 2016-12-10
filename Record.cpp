@@ -67,7 +67,7 @@ void Record::extractFileFieldByPos(ifstream& is, int charPos, string type)
     {
         is.seekg(charPos);  // position to extract from
         getline(is, nameBuffer, ','); // get chars up to delim
-        nameCharSize = nameBuffer.size(); // char count extracted
+        nameCharSize = nameBuffer.size(); // char keyCount extracted
         name = nameBuffer; // set name field
     }
     else if (type == "idNum")  // idNum field
