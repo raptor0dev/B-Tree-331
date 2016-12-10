@@ -33,6 +33,7 @@ displayed to the console indicating execution of the program.
 #include "dualHeap.h"  //include for dual heap
 #include "type.h"   //macros that replace sections of code based on data type
 #include "SequenceSet.h"
+#include "BTreeBlock.h"
 
 using namespace std;
 
@@ -394,36 +395,64 @@ int main(int argc, char *argv[])
 
     //recObj = blockObj.getBlockRecord(0);
     //cout << "recObj: " << recObj << endl;
+    ifs.clear();
+    ofs.clear();
+    ofs.flush();
     ifs.open("sorted.txt");
     ofs.open("bplustree.txt");
-    SequenceSet<Record> blockObj(ofs, blockSize);
 
-    //SequenceSet<ItemType>::setAvailList(ostream& os, string availValue)
+    //recObj.setName("aaaa");
+    //recObj.setIdNum(1234);
+    SequenceSet<Record> SSblockObj(ofs, blockSize);
+    BTreeBlock<int> BTblockObj(blockSize);
+    SSblockObj.writeEmptyBlock(ofs, ofs.tellp());
+    BTblockObj.writeEmptyBlock(ofs, ofs.tellp());
+
+
     string availValue = "55";
     string SS = "12";
     string BT = "12345678";
-    blockObj.writeEmptyBlock(ofs, 27);
-    blockObj.setAvailList(ofs, availValue);
-    cout << endl;
+    SSblockObj.setAvailList(ofs, availValue);
+    cout << "Avail list head: " << SSblockObj.getAvailList() << endl;
 
-    blockObj.setSequenceHead(ofs, SS);
-    cout << endl;
+    SSblockObj.setSequenceHead(ofs, SS);
+    cout << "Seq Set head: " << SSblockObj.getSequenceHead() << endl;
 
-    blockObj.setBTreeHead(ofs, BT);
-    cout << blockObj.getBTreeHead();
-    cout << endl;
-    /*
+    SSblockObj.setBTreeHead(ofs, BT);
+    cout << "BTree head: " << SSblockObj.getBTreeHead() << endl;
+
+    //blockObj.writeToFile(ofs, recObj, 27);
+
+    SSblockObj.setAvailList(ofs, "0");
+    SSblockObj.setSequenceHead(ofs, "27");
+    SSblockObj.setBTreeHead(ofs, "0");
+
+    int availListHead = 0, seqSetHead = 27, bTreeHead = 0;
+
+    //** read in sorted.txt **//
     while (ifs.peek() != EOF)
     {
+        recObj.extractFileFront();
+        BTblockObj.searchForBlock(recObj.RECOBJGETFIELD,);
         if (blockObj.getBlockSize())
         recObj.extractFileFront();
         blockObj.writeToFile(ofs, recObj, pos);
         pos += recObj.getRecordSize();
     }
-    */
+
     ifs.close();
     ofs.close();
+    ifs.clear();
+    ifs.open("bplustree.txt");
+    string buffer;
+    cout << endl << "bplustree.txt data" << endl;
+    while(!ifs.eof())//ifs.peek() != EOF)
+    {
+        getline(ifs, buffer, '\n');
+        cout << buffer << endl;
+    }
 
+    ifs.close();
     //string str = "12345678";
     //cout << "Sizeof "  << str << ": " << str.length();
 
