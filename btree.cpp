@@ -127,7 +127,9 @@ BTTableClass::BTTableClass(char Mode, char * FileName)
 	{
 		DataFile.open(FileName, ios::in | ios::binary);
 		if (DataFile.fail())
-			cout<<"File cannot be opened" << endl;
+		{
+			cout << "Input file cannot be opened" << endl;
+		}
 
 		DataFile.read(reinterpret_cast <char *> (&CurrentNode), NodeSize);
 		if (DataFile.fail())
@@ -145,10 +147,11 @@ BTTableClass::BTTableClass(char Mode, char * FileName)
 	}
 	else if (Mode == 'w')
 	{
-		DataFile.open(FileName, ios::in | ios::out | ios::trunc |
-			ios::binary);
+		DataFile.open(FileName, ios::in | ios::out | ios::trunc |ios::binary);
 		if (DataFile.fail())
-			cout << "File cannot be opened" << endl;
+		{
+			cout << "Input file failed to open" << endl;
+		}
 
 		Root = NilPtr;
 		NumItems = 0;
@@ -160,9 +163,10 @@ BTTableClass::BTTableClass(char Mode, char * FileName)
 		DataFile.write(reinterpret_cast <char *> (&CurrentNode), NodeSize);
 	}
 	else
-		cout << "Incorrect mode given to BTTableClass constructor" << endl;
+	{
+		cout << "wrong write/read mode" << endl;
+	}
 }
-
 
 /* Given:   Nothing (other than the implicit object).
 Task:    This is the destructor for a BTTableClass object.  Its job
@@ -191,7 +195,7 @@ Return:  In the function name, true if the table object is empty,
 false otherwise.
 */
 bool BTTableClass::Empty(void) const
-{   // we could read node zero, but this is faster:
+{
 	return (Root == NilPtr);
 }
 
@@ -205,25 +209,27 @@ found, index and index + 1 are the indices between
 which Target would fit.  (If Target fits to the
 left of the first key, returns index of -1.)
 */
-bool BTTableClass::SearchNode(const KeyFieldType Target,
-	int & Location) const
+bool BTTableClass::SearchNode(const KeyFieldType Target,int & Location) const
 {
 	bool Found;
-
 	Found = false;
+
 	if (strcmp(Target, CurrentNode.Key[0].KeyField) < 0)
+	{
 		Location = -1;
+	}
 	else
 	{ // do a sequential search, right to left:
 		Location = CurrentNode.Count - 1;
-		while ((strcmp(Target, CurrentNode.Key[Location].KeyField) < 0)
-			&& (Location > 0))
+		while ((strcmp(Target, CurrentNode.Key[Location].KeyField) < 0) && (Location > 0))
+		{
 			Location--;
-
+		}
 		if (strcmp(Target, CurrentNode.Key[Location].KeyField) == 0)
+		{
 			Found = true;
+		}
 	}
-
 	return Found;
 }
 

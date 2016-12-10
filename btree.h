@@ -5,16 +5,18 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <cstdlib>
 using namespace std;
 
 const int MaxKeys = 11;   // max number of keys in a node
 const int MaxKeysPlusOne = MaxKeys + 1;
 const int MinKeys = 5;    // min number of keys in a node
 const long NilPtr = -1L;   // the L indicates a long int
-const int KeyFieldMax = 12;
+const int KeyFieldMax = 4;
 
 const int KFMaxPlus1 = KeyFieldMax + 1;
-const int DataFieldMax = 36;
+const int DataFieldMax = 4;
 const int DFMaxPlus1 = DataFieldMax + 1;
 const int NULLCHAR = '\0';  // NULL character used to mark end of a string
 typedef char KeyFieldType[KFMaxPlus1];
